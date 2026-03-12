@@ -202,18 +202,24 @@ def _banner(host, port):
 # ── Entry point ────────────────────────────────────────────────────────────────
 
 def main():
-    p = argparse.ArgumentParser(description="Teléfono TCP — shell remota")
+    p = argparse.ArgumentParser(
+        description="Teléfono TCP — shell remota",
+        usage="\n  %(prog)s -l <puerto>\n  %(prog)s -c <host> <puerto>"
+    )
+
     g = p.add_mutually_exclusive_group(required=True)
-    g.add_argument("--listen",  action="store_true", help="Modo receptor (ejecuta comandos)")
-    g.add_argument("--connect", action="store_true", help="Modo emisor (interfaz interactiva)")
-    p.add_argument("--host", default="127.0.0.1")
-    p.add_argument("--port", type=int, default=4444)
+    g.add_argument("-l", metavar="PORT",  type=int,
+                   help="Modo escucha  →  telefono.py -l 4444")
+    g.add_argument("-c", metavar=("HOST", "PORT"), type=str, nargs=2,
+                   help="Modo connect  →  telefono.py -c 192.168.1.2 4444")
+
     args = p.parse_args()
 
-    if args.listen:
-        modo_escucha(args.port)
+    if args.l:
+        modo_escucha(args.l)
     else:
-        modo_conectar(args.host, args.port)
+        host, port = args.c
+        modo_conectar(host, int(port))
 
 if __name__ == "__main__":
     main()
